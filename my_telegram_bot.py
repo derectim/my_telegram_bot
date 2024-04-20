@@ -11,12 +11,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 
 # Конфигурация API ключа OpenAI
 openai.api_key = os.getenv('OPENAI_API_KEY')  # Убедитесь, что у вас установлена эта переменная окружения
+client = openai.OpenAI()  # Создание клиента OpenAI
 
-# Функция для извлечения текста статьи с веб-сайта
 def fetch_article(url):
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Проверка на HTTP ошибки
+        response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         article = soup.find('article')
         return article.text if article else "Статья не найдена"
@@ -24,11 +24,10 @@ def fetch_article(url):
         logging.error(f"Ошибка при получении статьи: {str(e)}")
         return f"Ошибка при получении статьи: {str(e)}"
 
-# Функция для переформулировки статьи с использованием OpenAI GPT-3
 def rewrite_article(article_text):
     try:
         response = client.completions.create(
-            model="gpt-3.5-turbo",  # Используйте доступную модель
+            model="text-davinci-003",
             prompt="Переформулируйте следующий текст: " + article_text,
             max_tokens=500,
             temperature=0.7
@@ -38,18 +37,15 @@ def rewrite_article(article_text):
         logging.error(f"Ошибка при рерайтинге статьи: {str(e)}")
         return f"Ошибка при рерайтинге статьи: {str(e)}"
 
-
-# Асинхронная функция для отправки переформулированной статьи в телеграм-канал
 async def send_rewritten_article(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    url = 'https://colorflowers.ru/a-vy-uzhe-gotovy-k-8-marta/'  # URL статьи
-    logging.info(f"Обрабатываю статью по URL: {url}")
+    url = 'https://colorflowers.ru/a-vy-uzhe-gotovy-k-8-marta/'
+    logging.info(f"Handling /send_article command for URL: {url}")
     original_article = fetch_article(url)
     rewritten_article = rewrite_article(original_article)
     await context.bot.send_message(chat_id=update.effective_chat.id, text=rewritten_article)
 
-# Основная функция для настройки и запуска бота
 def main():
-    token = os.getenv('TELEGRAM_BOT_TOKEN')  # Убедитесь, что у вас установлена эта переменная окружения
+    token = os.getenv('TELEGRAM_BOT_TOKEN')
     if not token:
         logging.error("Токен не установлен. Проверьте переменную окружения TELEGRAM_BOT_TOKEN.")
         return
