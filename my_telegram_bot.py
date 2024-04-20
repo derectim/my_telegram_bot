@@ -28,7 +28,7 @@ def fetch_article(url):
 def rewrite_article(article_text):
     try:
         response = openai.Completion.create(
-            model="text-davinci-003",  # Используйте доступную модель
+            model="gpt-3.5-turbo",  # Используйте доступную модель
             prompt="Переформулируйте следующий текст: " + article_text,
             max_tokens=500,
             temperature=0.7
