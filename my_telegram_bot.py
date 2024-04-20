@@ -33,11 +33,9 @@ def rewrite_article(article_text):
             max_tokens=500,
             temperature=0.7
         )
-        print("Response:", response)
         return response.choices[0].text.strip()
     except Exception as e:
         logging.error(f"Ошибка при рерайтинге статьи: {str(e)}")
-        print("Error:", str(e))
         return f"Ошибка при рерайтинге статьи: {str(e)}"
 
 
