@@ -27,18 +27,16 @@ def fetch_article(url):
 # Функция для переформулировки статьи с использованием OpenAI GPT-3
 def rewrite_article(article_text):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Подтвердите, что это правильная модель
-            messages=[{"role": "system", "content": "Переформулируйте следующий текст:"},
-                      {"role": "user", "content": article_text}]
+        response = openai.Completion.create(
+            model="gpt-3.5-turbo",  # Убедитесь, что это доступная модель
+            prompt="Переформулируйте следующий текст: " + article_text,
+            max_tokens=500,
+            temperature=0.7
         )
-        # Изменение способа доступа к тексту в ответе
-        return response['choices'][0]['message']['content'].strip()
+        return response['choices'][0]['text'].strip()
     except Exception as e:
         logging.error(f"Ошибка при рерайтинге статьи: {str(e)}")
         return f"Ошибка при рерайтинге статьи: {str(e)}"
-
-
 
 # Асинхронная функция для отправки переформулированной статьи в телеграм-канал
 async def send_rewritten_article(update: Update, context: ContextTypes.DEFAULT_TYPE):
