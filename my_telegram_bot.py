@@ -28,15 +28,16 @@ def fetch_article(url):
 def rewrite_article(article_text):
     try:
         response = openai.Completion.create(
-            model="gpt-3.5-turbo",  # Указываем модель
+            model="gpt-3.5-turbo",  # или "gpt-3.5-turbo" если доступно
             prompt="Переформулируйте следующий текст: " + article_text,
             max_tokens=500,
-            temperature=0.7  # Это параметр для регулировки случайности ответа
+            temperature=0.7
         )
-        return response.choices[0].text.strip()
+        return response['choices'][0]['text'].strip()
     except Exception as e:
         logging.error(f"Ошибка при рерайтинге статьи: {str(e)}")
         return f"Ошибка при рерайтинге статьи: {str(e)}"
+
 
 
 # Асинхронная функция для отправки переформулированной статьи в телеграм-канал
