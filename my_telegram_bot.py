@@ -27,7 +27,7 @@ def fetch_article(url):
 # Функция для переформулировки статьи с использованием OpenAI GPT-3
 def rewrite_article(article_text):
     try:
-        response = openai.Completion.create(
+        response = client.completions.create(
             model="gpt-3.5-turbo",  # Используйте доступную модель
             prompt="Переформулируйте следующий текст: " + article_text,
             max_tokens=500,
