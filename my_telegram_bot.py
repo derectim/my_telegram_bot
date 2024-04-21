@@ -9,9 +9,10 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# Конфигурация API ключа OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')  # Убедитесь, что у вас установлена эта переменная окружения
-client = openai.OpenAI()  # Создание клиента OpenAI
+# Конфигурация API ключа OpenAI и настройка прокси
+openai.api_key = os.getenv('OPENAI_API_KEY')
+os.environ['HTTP_PROXY'] = 'http://10.100.10.216:3128'
+os.environ['HTTPS_PROXY'] = 'http://10.100.10.216:3128'
 
 def fetch_article(url):
     try:
@@ -26,7 +27,7 @@ def fetch_article(url):
 
 def rewrite_article(article_text):
     try:
-        response = client.completions.create(
+        response = openai.Completion.create(
             model="text-davinci-003",
             prompt="Переформулируйте следующий текст: " + article_text,
             max_tokens=500,
